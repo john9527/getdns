@@ -3552,17 +3552,23 @@ void _getdns_get_validation_chain(getdns_dns_req *dnsreq)
 	getdns_network_req *netreq, **netreq_p;
 	chain_head *chain = NULL, *chain_p;
 
+#ifdef DNSSEC_ROADBLOCK_AVOIDANCE
 	if (dnsreq->avoid_dnssec_roadblocks) {
 		chain = dnsreq->chain;
 
-	} else if (dnsreq->validating)
+	} else
+#endif
+	if (dnsreq->validating)
 		return;
 	dnsreq->validating = 1;
 
+#ifdef DNSSEC_ROADBLOCK_AVOIDANCE
 	if (dnsreq->avoid_dnssec_roadblocks && chain->lock == 0)
 		; /* pass */
 
-	else for (netreq_p = dnsreq->netreqs; (netreq = *netreq_p) ; netreq_p++) {
+	else
+#endif
+	for (netreq_p = dnsreq->netreqs; (netreq = *netreq_p) ; netreq_p++) {
 		if (!  netreq->response
 		    || netreq->response_len < GLDNS_HEADER_SIZE
 		    || ( GLDNS_RCODE_WIRE(netreq->response)
@@ -3593,8 +3599,10 @@ void _getdns_get_validation_chain(getdns_dns_req *dnsreq)
 			if (chain_p->lock) chain_p->lock--;
 		}
 		dnsreq->chain = chain;
+#ifdef DNSSEC_ROADBLOCK_AVOIDANCE
 		if (dnsreq->avoid_dnssec_roadblocks && chain->lock)
 			chain->lock -= 1;
+#endif
 
 		check_chain_complete(chain);
 	} else {
