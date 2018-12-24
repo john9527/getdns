@@ -2887,7 +2887,11 @@ getdns_context_set_upstream_recursive_servers(struct getdns_context *context,
 	}
 	memset(&hints, 0, sizeof(struct addrinfo));
 	hints.ai_family    = AF_UNSPEC;      /* Allow IPv4 or IPv6 */
+#ifdef HAVE_OLD_GETADDRINFO
+	hints.ai_socktype  = SOCK_STREAM;    /* Datagram socket */
+#else
 	hints.ai_socktype  = 0;              /* Datagram socket */
+#endif
 	hints.ai_flags     = AI_NUMERICHOST; /* No reverse name lookups */
 	hints.ai_protocol  = 0;              /* Any protocol */
 	hints.ai_canonname = NULL;

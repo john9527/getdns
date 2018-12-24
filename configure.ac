@@ -1,4 +1,4 @@
-#                                               -*- Autoconf -*-
+_#                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 # known to work with autconf version: autoconf (GNU Autoconf) 2.69
 #
@@ -757,6 +757,16 @@ case "$enable_all_drafts" in
 	no|*)
 		;;
 esac
+
+AC_ARG_ENABLE(enable-old-getaddrinfo, AC_HELP_STRING([--enable-old-getaddrinfo], [Work around error in older linux getaddrinfo]))
+case "$enable_old_getaddrinfo" in
+	yes)
+		AC_DEFINE_UNQUOTED([HAVE_OLD_GETADDRINFO], [1], [Set this to work around error in older linux getaddrinfo function.])
+		;;
+	no|*)
+		;;
+esac
+
 AC_ARG_ENABLE(dnssec-roadblock-avoidance, AC_HELP_STRING([--disable-dnssec-roadblock-avoidance], [Disable dnssec roadblock avoidance]))
 case "$enable_dnssec_roadblock_avoidance" in
 	no)

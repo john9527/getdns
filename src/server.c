@@ -970,9 +970,18 @@ getdns_return_t getdns_context_set_listen_addresses(
 	for (i = 0; i < new_set->count; i++)
 		new_set->items[i].fd = -1;
 
-	(void) memset(&hints, 0, sizeof(struct addrinfo));
-	hints.ai_family    = AF_UNSPEC;
-	hints.ai_flags     = AI_NUMERICHOST;
+	memset(&hints, 0, sizeof(struct addrinfo));
+	hints.ai_family    = AF_UNSPEC;      /* Allow IPv4 or IPv6 */
+#ifdef HAVE_OLD_GETADDRINFO
+	hints.ai_socktype  = SOCK_STREAM;    /* Datagram socket */
+#else
+	hints.ai_socktype  = 0;              /* Datagram socket */
+#endif
+	hints.ai_flags     = AI_NUMERICHOST; /* No reverse name lookups */
+	hints.ai_protocol  = 0;              /* Any protocol */
+	hints.ai_canonname = NULL;
+	hints.ai_addr      = NULL;
+	hints.ai_next      = NULL;
 
 	for (i = 0; !r && i < new_set_count; i++) {
 		getdns_dict             *dict = NULL;
